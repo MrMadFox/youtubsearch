@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  api:
+    command: ["venv/bin/python", "src/server.py"]
+    restart: always
+    image: ${REGISTRY}api:${VERSION:-latest}
+    build:
+      context: .
+    environment:
+      - ENV=production
+      - MONGOURI=mongodb://mongo:27017
+    volumes:
+      - ./api:/app/src
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+
+  cron:
+    restart: always
+    image: ${REGISTRY}cron:${VERSION:-latest}
+    build:
+      context: .
+      dockerfile: dockerfile.cron
+    volumes:
+      - ./cron/src:/app/src
+    environment:
+      - ENV=production
+      - MONGOURI=mongodb://mongo:27017
+      - YOUTUBE_KEYS=${YOUTUBE_KEYS}
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest

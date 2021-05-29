@@ -1,0 +1,14 @@
+FROM python:3.9-slim
+
+# RUN touch /var/log/cron.log
+# RUN apt update
+# RUN apt -y install cron
+# COPY ./cron/crontab /etc/cron.d/crontab
+# RUN chmod 0644 /etc/cron.d/crontab
+
+WORKDIR /app
+COPY ./cron/req.txt /tmp/req.txt
+RUN pip install -r /tmp/req.txt
+COPY ./cron/src /app/src
+
+CMD ["python3", "src/main.py"]
